@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-
+import { apikey } from "../config/Apikey";
 function Search({ searchquery}) {
   const [articles, setArticles] = useState([]);
   const [error, setError] = useState(null);
@@ -54,14 +54,21 @@ function Search({ searchquery}) {
 
   // ✅ Fetch data & auto read on load
   useEffect(() => {
-    const apikey = "bb4d62883fd5f52d8203ac210f01464c";
+    
         const url= `https://gnews.io/api/v4/search?q=${searchquery}&apikey=${apikey}`
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         if (data.articles) {
           setArticles(data.articles);
-          readAllHeadlines(data.articles); // ✅ Call after data is set
+
+        // First say greeting
+        speakText(`Here are news results for your search: ${query}`, null, null);
+
+        // Delay reading headlines slightly to let greeting finish
+        setTimeout(() => {
+          readAllHeadlines(data.articles);
+        }, 4000); // 1 second delay
         } else {
           setError("No articles found. Check API key or quota.");
         }
@@ -72,26 +79,66 @@ function Search({ searchquery}) {
       });
   }, [searchquery]);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
   return (
     <div className="bg-gray-100 min-h-screen text-gray-900 p-6">
       <h1 className="text-2xl font-bold mb-6 text-center">Search For :  {searchquery}</h1>
 
       {/* Global control buttons */}
-      <div className="flex justify-center gap-4 mb-6">
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded-md"
-          onClick={() => readAllHeadlines()}
-          disabled={articles.length === 0}
-        >
-          📢 Read All Headlines
-        </button>
-        <button
-          className="bg-red-500 text-white px-4 py-2 rounded-md"
-          onClick={stopSpeaking}
-        >
-          ⏹ Stop
-        </button>
-      </div>
+<div className="flex justify-center gap-4 mb-6">
+  <button
+    className="bg-green-500 text-white px-4 py-2 rounded-md"
+    onClick={() => readAllHeadlines()}
+    disabled={articles.length === 0}
+  >
+    📢 Read All Headlines
+  </button>
+
+  <button
+    className="bg-yellow-500 text-white px-4 py-2 rounded-md"
+    onClick={() => window.speechSynthesis.pause()}
+  >
+    ⏸ Pause
+  </button>
+
+  <button
+    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+    onClick={() => window.speechSynthesis.resume()}
+  >
+    ▶ Resume
+  </button>
+
+  <button
+    className="bg-red-500 text-white px-4 py-2 rounded-md"
+    onClick={stopSpeaking}
+  >
+    ⏹ Stop
+  </button>
+</div>
+
 
       {/* Show currently reading text */}
       {currentText && (

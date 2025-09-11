@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ShowNews from "./ShowNews";
 import Search from "./Search";
 
@@ -87,6 +87,33 @@ const Home = () => {
     setSearchQuery(queryText);   // now commit input to actual query
     setSearchactive(true);
   };
+
+
+  //Welcome
+  const speakingtext=(text)=>{
+    const utterance = new SpeechSynthesisUtterance(text);
+    window.speechSynthesis.speak(utterance);
+  }
+
+
+  
+  
+useEffect(() => {
+  if (!window.speechSynthesis.speaking) {
+    const utterance = new SpeechSynthesisUtterance(
+      "Please choose a news category general, world, nation, business, technology, entertainment, sports, science, health, or enter a search query to get the latest news."
+      // "hello"
+    );
+
+    // 👇 run after speaking finishes
+    utterance.onend = () => {
+      setListening(true);
+      handleVoiceInput()
+    };
+
+    window.speechSynthesis.speak(utterance);
+  }
+}, []);
 
   return (
     <div className="flex flex-col items-center gap-6 mt-10">
